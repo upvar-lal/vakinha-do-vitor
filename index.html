@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vakinha do Vídeo</title>
+<style>
+:root{--bg:#faf7f2;--card:#fff;--ink:#1d1b19;--mute:#6b665f;--line:#e6e0d6;--acc:#e8553d;--acc2:#2f7d5b;--soft:#fdeee9;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171513;--card:#211e1b;--ink:#f3eee7;--mute:#a39c92;--line:#34302b;--acc:#ff7a62;--acc2:#4cc08c;--soft:#33211d;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#171513;--card:#211e1b;--ink:#f3eee7;--mute:#a39c92;--line:#34302b;--acc:#ff7a62;--acc2:#4cc08c;--soft:#33211d;color-scheme:dark}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Georgia,"Times New Roman",serif}
+main{max-width:720px;margin:0 auto;padding:24px 16px 64px}
+h1{font-size:2rem;line-height:1.15;margin:.2em 0}h2{font-size:1.15rem;margin:0 0 12px}
+.sans,button,input,textarea{font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+.tag{font:600 .75rem system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--acc)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:16px}
+.bar{height:12px;background:var(--line);border-radius:99px;overflow:hidden;margin:12px 0 8px}
+.bar i{display:block;height:100%;background:var(--acc2);border-radius:99px;transition:width .5s}
+.stats{display:flex;justify-content:space-between;gap:8px;font:.9rem system-ui,sans-serif;color:var(--mute);flex-wrap:wrap}
+.big{font:700 1.8rem system-ui,sans-serif;color:var(--ink)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.chip{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:99px;padding:8px 14px;cursor:pointer;font-size:.95rem}
+.chip.on{border-color:var(--acc);background:var(--soft);color:var(--acc)}
+label.f{display:block;font:600 .85rem system-ui,sans-serif;margin:12px 0 4px}
+input,textarea{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font-size:1rem}
+textarea{min-height:64px;resize:vertical}
+.rw{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:8px;cursor:pointer}
+.rw.on{border-color:var(--acc);background:var(--soft)}
+.rw input{width:auto;margin-top:4px}.rw b{font-family:system-ui,sans-serif}.rw small{display:block;color:var(--mute);font-family:system-ui,sans-serif}
+.rw .p{margin-left:auto;font:600 .9rem system-ui,sans-serif;white-space:nowrap}
+button.main{width:100%;margin-top:16px;padding:14px;border:0;border-radius:12px;background:var(--acc);color:#fff;font-size:1.05rem;font-weight:700;cursor:pointer}
+button.sm{padding:7px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.row{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--line);font-family:system-ui,sans-serif;font-size:.92rem}
+.row:first-of-type{border-top:0}.mute{color:var(--mute)}
+.pix{word-break:break-all;background:var(--bg);border:1px dashed var(--acc);border-radius:10px;padding:12px;font:1rem ui-monospace,monospace;margin:10px 0}
+.err{color:var(--acc);font:.9rem system-ui,sans-serif;margin-top:8px}
+.hide{display:none}
+</style>
+</head>
+<body>
+<main>
+  <div class="tag">Vakinha pessoal</div>
+  <h1 id="title">Ajude meu próximo vídeo a sair do papel</h1>
+  <p id="desc" class="mute">Estou juntando uma grana para produzir meu próximo vídeo. Quem apoiar pode, se quiser, receber o processo por dentro: storyboard, animatic e mais.</p>
+
+  <div class="card">
+    <div class="big" id="raised">R$ 0</div>
+    <div class="bar"><i id="fill" style="width:0%"></i></div>
+    <div class="stats"><span id="pct">0% da meta</span><span id="goalTxt">Meta: R$ 1.000</span><span id="cnt">0 apoiadores</span></div>
+  </div>
+
+  <div class="card" id="donate">
+    <h2>Quanto você quer apoiar?</h2>
+    <div class="chips" id="chips"></div>
+    <label class="f" for="amt">Outro valor (R$)</label>
+    <input id="amt" type="number" min="1" step="1" inputmode="numeric" placeholder="25">
+
+    <h2 style="margin-top:22px">Recompensa <span class="mute" style="font-weight:400">(opcional)</span></h2>
+    <p class="mute sans" style="margin:0 0 10px;font-size:.9rem">Não precisa escolher nenhuma. Se escolher, o valor mínimo é a soma delas.</p>
+    <div id="rewards"></div>
+    <div id="need" class="mute sans" style="font-size:.9rem"></div>
+
+    <label class="f" for="nm">Seu nome</label>
+    <input id="nm" maxlength="60" placeholder="Como quer aparecer">
+    <label class="f" for="msg">Mensagem (opcional)</label>
+    <textarea id="msg" maxlength="200"></textarea>
+    <div id="contactBox" class="hide">
+      <label class="f" for="ct">Contato para entregar a recompensa</label>
+      <input id="ct" maxlength="80" placeholder="E-mail ou @instagram">
+    </div>
+    <div class="err" id="err"></div>
+    <button class="main" id="go">Quero apoiar</button>
+  </div>
+
+  <div class="card hide" id="pixBox">
+    <h2>Quase lá: faça o Pix</h2>
+    <div class="sans" id="pixInfo"></div>
+    <div class="pix" id="pixKey">chave não configurada</div>
+    <button class="sm" id="copy">Copiar chave</button>
+    <a id="wa" class="hide" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none;margin-top:14px;padding:13px;border-radius:12px;background:var(--acc2);color:#fff;font:700 1rem system-ui,sans-serif">Avisar no WhatsApp que paguei</a>
+    <p class="mute sans" style="font-size:.9rem">Depois do Pix, avise pelo WhatsApp para eu confirmar e colocar você na lista de apoiadores.</p>
+  </div>
+
+  <div class="card" id="club">
+    <h2>Clube dos apoiadores</h2>
+    <div id="clubLogin">
+      <p class="mute sans" style="font-size:.9rem;margin:0">Entre com seu nome e o código fixado no grupo do WhatsApp. Só na primeira vez.</p>
+      <label class="f" for="cu">Seu nome</label><input id="cu" autocomplete="name">
+      <label class="f" for="cp">Código do clube</label><input id="cp" autocapitalize="characters" placeholder="CLUBE-XXXXXX">
+      <div class="err" id="cErr"></div>
+      <button class="main" id="cGo">Entrar</button>
+    </div>
+    <div id="clubIn" class="hide">
+      <div class="row"><span id="who"></span><button class="sm" id="cOut">Sair</button></div>
+      <div id="clubItems"></div>
+    </div>
+  </div>
+
+  <div class="card"><h2>Apoiadores</h2><div id="sup" class="mute sans">Seja o primeiro!</div></div>
+
+  <div class="card" id="gate">
+    <button class="sm" id="open">Área do criador</button>
+    <div id="pinBox" class="hide">
+      <label class="f" for="pin">Senha de admin</label>
+      <input id="pin" type="password" inputmode="numeric" placeholder="A senha definida no servidor">
+      <button class="sm" id="pinOk" style="margin-top:8px">Entrar</button>
+      <div class="err" id="pinErr"></div>
+    </div>
+  </div>
+
+  <div class="card hide" id="owner">
+    <h2>Painel do criador</h2>
+    <label class="f" for="eT">Título</label><input id="eT">
+    <label class="f" for="eD">Descrição</label><textarea id="eD"></textarea>
+    <label class="f" for="eG">Meta (R$)</label><input id="eG" type="number" min="1">
+    <label class="f" for="eP">Chave Pix</label><input id="eP" placeholder="e-mail, CPF, telefone ou chave aleatória">
+    <label class="f" for="eW">Seu WhatsApp (com DDD, só números)</label><input id="eW" inputmode="numeric" placeholder="11999998888">
+    <button class="main" id="save" style="margin-top:12px">Salvar</button>
+    <h2 style="margin-top:24px">Registrar doação recebida</h2>
+    <p class="mute sans" style="font-size:.9rem;margin:0">Quando confirmar um Pix, lance aqui para somar na barra.</p>
+    <label class="f" for="dN">Nome</label><input id="dN">
+    <label class="f" for="dA">Valor (R$)</label><input id="dA" type="number" min="1" inputmode="decimal">
+    <label class="f" for="dM">Mensagem (opcional)</label><input id="dM">
+    <button class="main" id="addDon" style="margin-top:12px">Adicionar à vakinha</button>
+    <div class="err" id="dErr"></div>
+    <h2 style="margin-top:24px">Conteúdo do clube</h2>
+    <p class="mute sans" style="font-size:.9rem;margin:0">Cole o link (ou um texto) de cada recompensa. Só quem estiver logado vê.</p>
+    <div id="contentBox"></div>
+    <button class="main" id="saveContent" style="margin-top:12px">Salvar conteúdo</button>
+    <h2 style="margin-top:24px">Códigos do clube</h2>
+    <p class="mute sans" style="font-size:.9rem;margin:0">Cada código libera as recompensas marcadas. Fixe o código no grupo do WhatsApp.</p>
+    <label class="f" for="mU">Nome do grupo (só para você)</label><input id="mU" placeholder="Grupo VIP">
+    <label class="f" for="mP">Código (vazio = gera automático)</label><input id="mP" autocapitalize="characters">
+    <label class="f">Recompensas liberadas</label><div id="memRw"></div>
+    <div class="err" id="mErr"></div>
+    <button class="main" id="addMem" style="margin-top:12px">Criar código</button>
+    <div id="memList" class="mute sans" style="margin-top:12px"></div>
+  </div>
+</main>
+<script>window.API_URL="";/* APK: coloque aqui o endereço do servidor, ex: https://meuapp.onrender.com */</script>
+<script>
+const REWARDS=[
+ {id:"storyboard",t:"Storyboard",d:"Os painéis desenhados do vídeo, cena a cena, antes de gravar.",min:20},
+ {id:"animatic",t:"Animatic",d:"O storyboard em movimento, com timing e áudio provisório.",min:40},
+ {id:"bastidores",t:"Bastidores",d:"Rascunhos, referências e processo, antes de postar.",min:30},
+ {id:"credito",t:"Nome nos créditos",d:"Seu nome no agradecimento do vídeo final.",min:10}
+];
+const PRESETS=[10,25,50,100];
+const DEF={title:document.getElementById("title").textContent,desc:document.getElementById("desc").textContent,goal:1000,pix:"",raised:0,count:0,supporters:[],wa:""};
+let camp={...DEF},sel=new Set(),amount=0,lastPix="";
+const $=id=>document.getElementById(id);
+const brl=n=>"R$ "+Number(n||0).toLocaleString("pt-BR",{maximumFractionDigits:2});
+const esc=s=>{const d=document.createElement("div");d.textContent=s;return d.innerHTML};
+
+function minNeeded(){let s=0;sel.forEach(id=>s+=REWARDS.find(r=>r.id===id).min);return s}
+function render(){
+  $("title").textContent=camp.title;$("desc").textContent=camp.desc;
+  const p=Math.min(100,Math.round(camp.raised/camp.goal*100));
+  $("raised").textContent=brl(camp.raised);$("fill").style.width=p+"%";
+  $("pct").textContent=p+"% da meta";$("goalTxt").textContent="Meta: "+brl(camp.goal);
+  $("cnt").textContent=camp.count+(camp.count===1?" apoiador":" apoiadores");
+  $("sup").innerHTML=camp.supporters.length?camp.supporters.map(s=>`<div class="row"><span><b>${esc(s.name)}</b>${s.msg?`<br><span class="mute">${esc(s.msg)}</span>`:""}</span><span>${brl(s.amount)}</span></div>`).join(""):"Seja o primeiro!";
+  $("chips").innerHTML=PRESETS.map(v=>`<button type="button" class="chip${amount===v?" on":""}" data-v="${v}">${brl(v)}</button>`).join("");
+  $("rewards").innerHTML=REWARDS.map(r=>`<label class="rw${sel.has(r.id)?" on":""}"><input type="checkbox" data-r="${r.id}"${sel.has(r.id)?" checked":""}><span><b>${r.t}</b><small>${r.d}</small></span><span class="p">+ ${brl(r.min)}</span></label>`).join("");
+  const m=minNeeded();$("need").textContent=m?`Valor mínimo com as recompensas: ${brl(m)}`:"";
+  $("contactBox").classList.toggle("hide",!sel.size);
+}
+$("chips").onclick=e=>{const v=e.target.dataset.v;if(!v)return;amount=+v;$("amt").value="";render()};
+$("amt").oninput=e=>{amount=+e.target.value||0;render();$("amt").focus()};
+$("rewards").onchange=e=>{const id=e.target.dataset.r;if(!id)return;e.target.checked?sel.add(id):sel.delete(id);
+  if(sel.size&&amount<minNeeded()){amount=minNeeded();$("amt").value=amount}render()};
+
+const API=(window.API_URL||"").replace(/\/$/,"");let adminPw="",session=null,ownerData=null;
+async function api(p,o={}){
+  const h={"Content-Type":"application/json"};if(o.admin)h.Authorization="Bearer "+adminPw;
+  const r=await fetch(API+p,{method:o.body?"POST":"GET",headers:h,body:o.body?JSON.stringify(o.body):undefined});
+  const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||"Erro de conexão");return j;
+}
+async function refresh(){try{camp={...DEF,...await api("/api/state")};render()}catch(e){}}
+$("go").onclick=()=>{
+  const err=$("err");err.textContent="";
+  const name=$("nm").value.trim(),m=minNeeded();
+  if(!(amount>=1))return err.textContent="Escolha um valor.";
+  if(amount<m)return err.textContent="O valor é menor que o mínimo das recompensas ("+brl(m)+").";
+  if(!name)return err.textContent="Diga seu nome.";
+  if(sel.size&&!$("ct").value.trim())return err.textContent="Deixe um contato para eu entregar a recompensa.";
+  const rw=[...sel].map(id=>REWARDS.find(r=>r.id===id).t);
+  $("pixInfo").textContent="Valor: "+brl(amount)+(rw.length?" · Recompensas: "+rw.join(", "):"");
+  lastPix=camp.pix;$("pixKey").textContent=camp.pix||"O criador ainda não configurou a chave Pix.";
+  const msg=$("msg").value.trim();
+  const txt="Oi! Fiz um Pix de "+brl(amount)+" para a vakinha.\nNome: "+name+(rw.length?"\nRecompensas: "+rw.join(", ")+"\nContato: "+$("ct").value.trim():"")+(msg?"\nMensagem: "+msg:"");
+  const a=$("wa");
+  if(camp.wa){a.href="https://wa.me/"+camp.wa+"?text="+encodeURIComponent(txt);a.classList.remove("hide")}else a.classList.add("hide");
+  $("pixBox").classList.remove("hide");$("pixBox").scrollIntoView({behavior:"smooth"});
+};
+$("copy").onclick=async()=>{try{await navigator.clipboard.writeText(lastPix);$("copy").textContent="Copiado!"}catch(e){$("copy").textContent="Selecione e copie manualmente"}};
+
+
+function showClub(){
+  $("clubLogin").classList.toggle("hide",!!session);$("clubIn").classList.toggle("hide",!session);
+  if(!session)return;
+  $("who").textContent="Olá, "+session.name;
+  const box=$("clubItems");box.textContent="";
+  if(!session.items.length)box.textContent="Esse código ainda não tem recompensas.";
+  session.items.forEach(it=>{
+    const r=REWARDS.find(x=>x.id===it.id);if(!r)return;
+    const d=document.createElement("div");d.className="row";
+    const t=document.createElement("b");t.textContent=r.t;d.appendChild(t);
+    const c=(it.content||"").trim();let el;
+    if(/^https?:\/\//i.test(c)){el=document.createElement("a");el.href=c;el.target="_blank";el.rel="noopener";el.textContent="Abrir";el.style.color="var(--acc)"}
+    else{el=document.createElement("span");el.className="mute";el.textContent=c||"Ainda não liberado"}
+    d.appendChild(el);box.appendChild(d);
+  });
+}
+async function clubLogin(name,code,silent){
+  try{session=await api("/api/club/login",{body:{name,code}});try{localStorage.setItem("clube",JSON.stringify({name,code}))}catch(e){}$("cErr").textContent="";showClub()}
+  catch(e){if(silent){try{localStorage.removeItem("clube")}catch(x){}}else $("cErr").textContent=e.message}
+}
+$("cGo").onclick=()=>clubLogin($("cu").value.trim(),$("cp").value);
+$("cOut").onclick=()=>{session=null;try{localStorage.removeItem("clube")}catch(e){}showClub()};
+
+$("open").onclick=()=>$("pinBox").classList.toggle("hide");
+$("pinOk").onclick=async()=>{
+  adminPw=$("pin").value;$("pinErr").textContent="";
+  try{ownerData=await api("/api/admin/data",{admin:1})}catch(e){return $("pinErr").textContent=e.message}
+  const c=ownerData.camp;
+  $("gate").classList.add("hide");$("owner").classList.remove("hide");
+  $("eT").value=c.title;$("eD").value=c.desc;$("eG").value=c.goal;$("eP").value=c.pix;$("eW").value=c.wa;
+  $("contentBox").innerHTML=REWARDS.map(r=>`<label class="f" for="rl_${r.id}">${r.t}</label><input id="rl_${r.id}" placeholder="Link ou texto">`).join("");
+  REWARDS.forEach(r=>$("rl_"+r.id).value=ownerData.content[r.id]||"");
+  $("memRw").innerHTML=REWARDS.map(r=>`<label style="margin-right:12px;font:.9rem system-ui,sans-serif"><input type="checkbox" style="width:auto" data-m="${r.id}"> ${r.t}</label>`).join("");
+  listCodes();
+};
+async function adm(path,body,btn,ok){
+  try{const r=await api(path,{admin:1,body});if(btn){const t=btn.textContent;btn.textContent=ok;setTimeout(()=>btn.textContent=t,1500)}return r}
+  catch(e){alert(e.message)}
+}
+$("save").onclick=async()=>{
+  const c=await adm("/api/admin/camp",{title:$("eT").value,desc:$("eD").value,goal:$("eG").value,pix:$("eP").value,wa:$("eW").value},$("save"),"Salvo!");
+  if(c){camp={...DEF,...c};render()}
+};
+$("saveContent").onclick=()=>{const content={};REWARDS.forEach(r=>content[r.id]=$("rl_"+r.id).value);adm("/api/admin/content",{content},$("saveContent"),"Salvo!")};
+$("addDon").onclick=async()=>{
+  const n=$("dN").value.trim(),v=+$("dA").value;
+  if(!n||!(v>0))return $("dErr").textContent="Preencha nome e valor.";
+  $("dErr").textContent="";
+  const c=await adm("/api/admin/donation",{name:n,amount:v,msg:$("dM").value},$("addDon"),"Adicionado!");
+  if(c){camp={...DEF,...c};render();$("dN").value=$("dA").value=$("dM").value=""}
+};
+function listCodes(){
+  const L=ownerData.codes;
+  $("memList").innerHTML=L.length?L.map(m=>`<div class="row"><span><b>${m.code}</b> <span class="mute">${esc(m.label)}</span><br><span class="mute">${m.rw.map(id=>REWARDS.find(r=>r.id===id).t).join(", ")||"sem recompensa"}</span></span><button class="sm" data-del="${m.code}">Remover</button></div>`).join(""):"Nenhum código criado.";
+}
+$("addMem").onclick=async()=>{
+  $("mErr").textContent="";
+  const rw=[...$("memRw").querySelectorAll("input:checked")].map(i=>i.dataset.m);
+  try{ownerData.codes=await api("/api/admin/codes",{admin:1,body:{label:$("mU").value,code:$("mP").value,rw}});listCodes();$("mU").value=$("mP").value="";$("memRw").querySelectorAll("input").forEach(i=>i.checked=false)}
+  catch(e){$("mErr").textContent=e.message}
+};
+$("memList").onclick=async e=>{const c=e.target.dataset.del;if(!c)return;const r=await adm("/api/admin/codes/delete",{code:c});if(r){ownerData.codes=r;listCodes()}};
+
+render();refresh();setInterval(refresh,20000);
+try{const m=JSON.parse(localStorage.getItem("clube")||"null");if(m)clubLogin(m.name,m.code,true)}catch(e){}
+</script>
+</body>
+</html>
